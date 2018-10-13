@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
+import com.udacity.firebase.shoppinglistplusplus.utils.Utils;
 
 import java.util.List;
 
@@ -47,17 +48,21 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
         TextView listName;
         TextView createdBy;
+        TextView editTime;
 
         ShoppingListViewHolder(@NonNull View itemView) {
             super(itemView);
 
             listName = itemView.findViewById(R.id.text_view_list_name);
             createdBy = itemView.findViewById(R.id.text_view_created_by_user);
+            editTime = itemView.findViewById(R.id.text_view_edit_time);
         }
 
         void bind(ShoppingList list) {
             listName.setText(list.getListName());
             createdBy.setText(list.getOwner());
+            String formattedDate = Utils.SIMPLE_DATE_FORMAT.format(list.getTimestamp());
+            editTime.setText(formattedDate);
         }
     }
 
