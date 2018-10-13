@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
 import com.udacity.firebase.shoppinglistplusplus.ui.adapters.ShoppingListAdapter;
+import com.udacity.firebase.shoppinglistplusplus.utils.Utils;
 
 import javax.annotation.Nullable;
 
@@ -37,6 +38,7 @@ public class ShoppingListsFragment extends Fragment {
     private RecyclerView.Adapter adapter;
     private TextView listName;
     private TextView createdBy;
+    private TextView editTime;
 
     public ShoppingListsFragment() {
         /* Required empty public constructor */
@@ -95,6 +97,7 @@ public class ShoppingListsFragment extends Fragment {
                     if (list != null) {
                         listName.setText(list.getListName());
                         createdBy.setText(list.getOwner());
+                        editTime.setText(Utils.SIMPLE_DATE_FORMAT.format(list.getTimestamp()));
                     }
                 } else {
                     Log.d(TAG, "Current data: null");
@@ -122,5 +125,6 @@ public class ShoppingListsFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         listName = rootView.findViewById(R.id.text_view_list_name);
         createdBy = rootView.findViewById(R.id.text_view_created_by_user);
+        editTime = rootView.findViewById(R.id.text_view_edit_time);
     }
 }
