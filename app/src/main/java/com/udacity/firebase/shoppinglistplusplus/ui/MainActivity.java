@@ -70,9 +70,9 @@ public class MainActivity extends BaseActivity {
      * Link layout elements from XML and setup the toolbar
      */
     public void initializeScreen() {
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        ViewPager viewPager = findViewById(R.id.pager);
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        Toolbar toolbar = findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         /**
          * Create SectionPagerAdapter, set it as adapter to viewPager with setOffscreenPageLimit(2)
@@ -109,7 +109,7 @@ public class MainActivity extends BaseActivity {
      */
     public class SectionPagerAdapter extends FragmentStatePagerAdapter {
 
-        public SectionPagerAdapter(FragmentManager fm) {
+        SectionPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -121,11 +121,9 @@ public class MainActivity extends BaseActivity {
         @Override
         public Fragment getItem(int position) {
 
-            Fragment fragment = null;
+            Fragment fragment;
 
-            /**
-             * Set fragment to different fragments depending on position in ViewPager
-             */
+            // Set fragment to different fragments depending on position in ViewPager
             switch (position) {
                 case 0:
                     fragment = ShoppingListsFragment.newInstance();

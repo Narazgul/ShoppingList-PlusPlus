@@ -20,21 +20,6 @@ android {
         debug {
         }
     }
-
-    /* This for anyone following along with the repo. Since you will have a different
-     * root URL, this code loads up a value from your gradle.properties file.
-     */
-
-//    buildTypes.each {
-//        it.buildConfigField 'String', 'UNIQUE_FIREBASE_ROOT_URL', UniqueFirebaseRootUrl
-//    }
-
-    packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE-FIREBASE.txt'
-        exclude 'META-INF/NOTICE'
-    }
-
 }
 
 dependencies {
@@ -46,6 +31,7 @@ dependencies {
 
     // firebase
     implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-firestore:17.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
