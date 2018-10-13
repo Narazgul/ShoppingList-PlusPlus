@@ -13,7 +13,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.udacity.firebase.shoppinglistplusplus.R;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Adds a new shopping list
@@ -56,7 +60,7 @@ public class AddListDialogFragment extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View rootView = inflater.inflate(R.layout.dialog_add_list, null);
-        mEditTextListName = (EditText) rootView.findViewById(R.id.edit_text_list_name);
+        mEditTextListName = rootView.findViewById(R.id.edit_text_list_name);
 
         /**
          * Call addShoppingList() when user taps "Done" keyboard action
@@ -89,7 +93,13 @@ public class AddListDialogFragment extends DialogFragment {
      * Add new active list
      */
     public void addShoppingList() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String listName = mEditTextListName.getText().toString();
 
+        Map<String, String> data = new HashMap<>();
+        data.put("listName", listName);
+
+        db.collection("shoppinglists").document(listName).set(data);
     }
 
 }
