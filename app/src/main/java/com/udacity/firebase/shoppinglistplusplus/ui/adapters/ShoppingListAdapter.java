@@ -15,13 +15,22 @@ import java.util.List;
 
 public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ShoppingListViewHolder> {
 
+    public interface ShoppingListItemClickListener {
+        void onItemClicked(int position);
+    }
+
     private List<ShoppingList> shoppingLists;
+    private ShoppingListItemClickListener listener;
+
+    public ShoppingListAdapter(ShoppingListItemClickListener listener) {
+        this.listener = listener;
+    }
 
     @NonNull
     @Override
     public ShoppingListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         return new ShoppingListViewHolder(LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.single_active_list, viewGroup, false));
+                .inflate(R.layout.single_active_list, viewGroup, false), listener);
     }
 
     @Override
@@ -50,12 +59,19 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         TextView createdBy;
         TextView editTime;
 
-        ShoppingListViewHolder(@NonNull View itemView) {
+        ShoppingListViewHolder(@NonNull View itemView, final ShoppingListItemClickListener listener) {
             super(itemView);
 
             listName = itemView.findViewById(R.id.text_view_list_name);
             createdBy = itemView.findViewById(R.id.text_view_created_by_user);
             editTime = itemView.findViewById(R.id.text_view_edit_time);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClicked(getAdapterPosition());
+                }
+            });
         }
 
         void bind(ShoppingList list) {
@@ -65,5 +81,4 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
             editTime.setText(formattedDate);
         }
     }
-
 }

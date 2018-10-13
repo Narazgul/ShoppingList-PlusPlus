@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -31,7 +32,7 @@ import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.LISTNAME
  * Use the {@link ShoppingListsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ShoppingListsFragment extends Fragment {
+public class ShoppingListsFragment extends Fragment implements ShoppingListAdapter.ShoppingListItemClickListener {
     public static final String TAG = ShoppingListsFragment.class.getSimpleName();
 
     private RecyclerView recyclerView;
@@ -121,10 +122,15 @@ public class ShoppingListsFragment extends Fragment {
         recyclerView = rootView.findViewById(R.id.recycler_view_active_lists);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ShoppingListAdapter();
+        adapter = new ShoppingListAdapter(this);
         recyclerView.setAdapter(adapter);
         listName = rootView.findViewById(R.id.text_view_list_name);
         createdBy = rootView.findViewById(R.id.text_view_created_by_user);
         editTime = rootView.findViewById(R.id.text_view_edit_time);
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        Toast.makeText(getContext(), "Clicked position: " + position, Toast.LENGTH_SHORT).show();
     }
 }
