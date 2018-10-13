@@ -15,9 +15,10 @@ import android.widget.TextView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.udacity.firebase.shoppinglistplusplus.R;
+import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
 
-import java.util.HashMap;
-import java.util.Map;
+import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ACTIVE_LISTS;
+import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.LISTNAME;
 
 /**
  * Adds a new shopping list
@@ -94,12 +95,10 @@ public class AddListDialogFragment extends DialogFragment {
      */
     public void addShoppingList() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String listName = mEditTextListName.getText().toString();
 
-        Map<String, String> data = new HashMap<>();
-        data.put("listName", listName);
+        ShoppingList list = new ShoppingList(mEditTextListName.getText().toString(), "Michael");
 
-        db.collection("shoppinglists").document(listName).set(data);
+        db.collection(ACTIVE_LISTS).document(LISTNAME).set(list);
     }
 
 }
