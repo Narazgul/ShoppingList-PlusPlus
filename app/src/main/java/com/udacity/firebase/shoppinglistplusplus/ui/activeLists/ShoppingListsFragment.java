@@ -3,12 +3,12 @@ package com.udacity.firebase.shoppinglistplusplus.ui.activeLists;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
+import com.udacity.firebase.shoppinglistplusplus.ui.adapters.ShoppingListAdapter;
 
 import javax.annotation.Nullable;
 
@@ -32,9 +33,10 @@ import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.LISTNAME
 public class ShoppingListsFragment extends Fragment {
     public static final String TAG = ShoppingListsFragment.class.getSimpleName();
 
-    private ListView mListView;
-    private TextView mTextViewListName;
-    private TextView mTextViewCreatedBy;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private TextView listName;
+    private TextView createdBy;
 
     public ShoppingListsFragment() {
         /* Required empty public constructor */
@@ -91,22 +93,12 @@ public class ShoppingListsFragment extends Fragment {
 
                     ShoppingList list = snapshot.toObject(ShoppingList.class);
                     if (list != null) {
-                        mTextViewListName.setText(list.getListName());
-                        mTextViewCreatedBy.setText(list.getOwner());
+                        listName.setText(list.getListName());
+                        createdBy.setText(list.getOwner());
                     }
                 } else {
                     Log.d(TAG, "Current data: null");
                 }
-            }
-        });
-
-        /**
-         * Set interactive bits, such as click events and adapters
-         */
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
             }
         });
 
@@ -123,8 +115,12 @@ public class ShoppingListsFragment extends Fragment {
      * Link layout elements from XML
      */
     private void initializeScreen(View rootView) {
-        mListView = rootView.findViewById(R.id.list_view_active_lists);
-        mTextViewListName = rootView.findViewById(R.id.text_view_list_name);
-        mTextViewCreatedBy = rootView.findViewById(R.id.text_view_created_by_user);
+        recyclerView = rootView.findViewById(R.id.recycler_view_active_lists);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new ShoppingListAdapter();
+        recyclerView.setAdapter(adapter);
+        listName = rootView.findViewById(R.id.text_view_list_name);
+        createdBy = rootView.findViewById(R.id.text_view_created_by_user);
     }
 }
