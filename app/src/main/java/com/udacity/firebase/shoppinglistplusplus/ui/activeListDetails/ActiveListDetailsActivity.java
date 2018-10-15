@@ -31,7 +31,7 @@ public class ActiveListDetailsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_active_list_details2);
+        setContentView(R.layout.activity_active_list_details);
 
         initializeScreen();
     }
