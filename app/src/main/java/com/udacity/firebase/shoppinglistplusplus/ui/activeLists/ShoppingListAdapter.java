@@ -1,4 +1,4 @@
-package com.udacity.firebase.shoppinglistplusplus.ui.adapters;
+package com.udacity.firebase.shoppinglistplusplus.ui.activeLists;
 
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -9,7 +9,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
-import com.udacity.firebase.shoppinglistplusplus.ui.viewholders.ShoppingListViewHolder;
 
 public class ShoppingListAdapter extends FirestoreRecyclerAdapter<ShoppingList, ShoppingListViewHolder> {
 
