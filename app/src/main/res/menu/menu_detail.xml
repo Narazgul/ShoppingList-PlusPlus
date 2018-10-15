@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.activeListDetails.ActiveListDetailsActivity">
+
+    <item
+        android:id="@+id/action_edit"
+        android:icon="@drawable/ic_edit_white"
+        android:orderInCategory="1"
+        android:title="@string/action_edit_list_name"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_delete"
+        android:icon="@drawable/ic_action_remove"
+        android:orderInCategory="2"
+        android:title="@string/action_remove_list"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_logout"
+        android:orderInCategory="10"
+        android:title="@string/action_logout"
+        app:showAsAction="never" />
+</menu>
