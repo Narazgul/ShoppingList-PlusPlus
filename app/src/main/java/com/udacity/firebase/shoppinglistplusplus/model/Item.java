@@ -1,7 +1,7 @@
 package com.udacity.firebase.shoppinglistplusplus.model;
 
 public class Item {
-    private String name;
+    private String itemName;
     private String owner;
     private Boolean bought;
     private String boughtBy;
@@ -10,14 +10,14 @@ public class Item {
     }
 
     public Item(String name, String owner) {
-        this.name = name;
+        this.itemName = name;
         this.owner = owner;
         this.bought = false;
         this.boughtBy = "";
     }
 
-    public String getName() {
-        return name;
+    public String getItemName() {
+        return itemName;
     }
 
     public String getOwner() {

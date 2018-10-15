@@ -20,6 +20,6 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(Item item) {
-        name.setText(item.getName());
+        name.setText(item.getItemName());
     }
 }

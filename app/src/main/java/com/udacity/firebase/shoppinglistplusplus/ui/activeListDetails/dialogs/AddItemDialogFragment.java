@@ -85,6 +85,10 @@ public class AddItemDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         addItem();
                     }
+                })
+                .setNegativeButton(R.string.negative_button_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
                 });
 
         return builder.create();

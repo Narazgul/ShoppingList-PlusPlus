@@ -94,7 +94,7 @@ public class EditListNameDialogFragment extends DialogFragment {
                         editShoppingListName();
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.negative_button_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                     }
                 });

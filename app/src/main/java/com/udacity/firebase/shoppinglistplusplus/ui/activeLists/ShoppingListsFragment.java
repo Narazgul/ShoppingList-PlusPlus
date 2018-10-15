@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -94,7 +93,7 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListAdapt
         recyclerView.setAdapter(newShoppingListsAdapter());
     }
 
-    private FirestoreRecyclerAdapter newShoppingListsAdapter() {
+    private ShoppingListAdapter newShoppingListsAdapter() {
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         final FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
