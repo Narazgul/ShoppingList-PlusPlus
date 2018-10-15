@@ -1,14 +1,13 @@
 package com.udacity.firebase.shoppinglistplusplus.model;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.ServerTimestamp;
-
-import java.util.Date;
 
 public class ShoppingList {
     private String listName;
     private String owner;
-    @ServerTimestamp
-    private Date timestamp;
+    private Timestamp createdAt;
+    private Timestamp lastEdited;
 
     public ShoppingList() {
     }
@@ -25,7 +24,13 @@ public class ShoppingList {
         return owner;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
+    @ServerTimestamp
+    public Timestamp getLastEdited() {
+        return lastEdited;
+    }
+
+    @ServerTimestamp
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 }
