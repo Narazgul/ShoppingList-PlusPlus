@@ -11,21 +11,22 @@ public final class Constants {
      */
     public static final String ACTIVE_LISTS = "activeLists";
 
-
-    /**
-     * Constants for Firebase object properties
+    /*
+     * Shopping List
      */
-    public static final String LISTNAME = "myList";
+    public static final String SHOPPING_LIST_NAME = "listName";
+    public static final String SHOPPING_LIST_OWNER = "owner";
+    public static final String SHOPPING_LIST_CREATED_AT = "createdAt";
+    public static final String SHOPPING_LIST_LAST_EDITED = "lastEdited";
 
-
-    /**
-     * Constants for Firebase URL
-     */
 
 
     /**
      * Constants for bundles, extras and shared preferences keys
      */
+    public static final String CONSTANT_LIST_NAME = "listname";
+    public static final String CONSTANT_DOCUMENT_ID = "documentId";
+    public static final String EXTRA_KEY_ID = "id";
 
 
 }
