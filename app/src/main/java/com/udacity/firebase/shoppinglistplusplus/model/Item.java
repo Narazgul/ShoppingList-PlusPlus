@@ -12,6 +12,8 @@ public class Item {
     public Item(String name, String owner) {
         this.name = name;
         this.owner = owner;
+        this.bought = false;
+        this.boughtBy = "";
     }
 
     public String getName() {
