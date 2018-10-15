@@ -11,7 +11,6 @@ import android.view.MenuItem;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
@@ -85,7 +84,6 @@ public class ActiveListDetailsActivity extends BaseActivity {
     }
 
     private void setActionbarTitle() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(ACTIVE_LISTS).document(documentId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
