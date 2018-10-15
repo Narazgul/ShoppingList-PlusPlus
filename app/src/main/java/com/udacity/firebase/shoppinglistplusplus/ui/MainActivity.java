@@ -30,9 +30,6 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /**
-         * Link layout elements from XML and setup the toolbar
-         */
         initializeScreen();
     }
 
@@ -74,15 +71,10 @@ public class MainActivity extends BaseActivity {
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         Toolbar toolbar = findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
-        /**
-         * Create SectionPagerAdapter, set it as adapter to viewPager with setOffscreenPageLimit(2)
-         **/
+
         SectionPagerAdapter adapter = new SectionPagerAdapter(getSupportFragmentManager());
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(adapter);
-        /**
-         * Setup the mTabLayout with view pager
-         */
         tabLayout.setupWithViewPager(viewPager);
     }
 
