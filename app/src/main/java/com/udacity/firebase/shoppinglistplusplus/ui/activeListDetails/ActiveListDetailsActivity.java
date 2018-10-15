@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -36,11 +38,6 @@ public class ActiveListDetailsActivity extends BaseActivity {
         initializeScreen();
     }
 
-    @Override
-    public void invalidateOptionsMenu() {
-        super.invalidateOptionsMenu();
-    }
-
     private void initializeScreen() {
         Toolbar toolbar = findViewById(R.id.app_bar);
         if (getIntent() != null && getIntent().hasExtra(EXTRA_KEY_ID)) {
@@ -49,6 +46,26 @@ public class ActiveListDetailsActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setActionbarTitle();
+    }
+
+    private void setActionbarTitle() {
+        db.collection(ACTIVE_LISTS).document(documentId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    shoppingList = snapshot.toObject(ShoppingList.class);
+                } else {
+                    finish();
+                    return;
+                }
+                getSupportActionBar().setTitle(shoppingList.getListName());
+            }
+        });
     }
 
     @Override
@@ -83,23 +100,7 @@ public class ActiveListDetailsActivity extends BaseActivity {
         dialog.show(getSupportFragmentManager(), "RemoveListDialogFragment");
     }
 
-    private void setActionbarTitle() {
-        db.collection(ACTIVE_LISTS).document(documentId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-
-                if (snapshot != null && snapshot.exists()) {
-                    shoppingList = snapshot.toObject(ShoppingList.class);
-                } else {
-                    finish();
-                    return;
-                }
-                getSupportActionBar().setTitle(shoppingList.getListName());
-            }
-        });
+    public void showAddItemDialog(View view) {
+        Toast.makeText(this, "Toasty", Toast.LENGTH_SHORT).show();
     }
 }
