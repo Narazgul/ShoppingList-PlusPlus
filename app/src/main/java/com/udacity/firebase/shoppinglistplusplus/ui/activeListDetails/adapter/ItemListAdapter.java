@@ -1,17 +1,18 @@
 package com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.Item;
-import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.viewholder.ItemViewHolder;
 
-public class ItemListAdapter extends FirestoreRecyclerAdapter<Item, ItemViewHolder> {
+public class ItemListAdapter extends FirestoreRecyclerAdapter<Item, ItemListAdapter.ItemViewHolder> {
 
     public interface ItemClickListener {
         void onItemClicked(String documentId);
@@ -47,5 +48,19 @@ public class ItemListAdapter extends FirestoreRecyclerAdapter<Item, ItemViewHold
     public void onDataChanged() {
         super.onDataChanged();
         // TODO update when emptyscreen should be shown
+    }
+
+    class ItemViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView name;
+
+        ItemViewHolder(@NonNull View itemView) {
+            super(itemView);
+            name = itemView.findViewById(R.id.text_view_active_list_item_name);
+        }
+
+        void bind(Item item) {
+            name.setText(item.getItemName());
+        }
     }
 }
