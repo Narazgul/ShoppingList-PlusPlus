@@ -18,7 +18,7 @@ import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
 
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ACTIVE_LISTS;
-import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.LISTNAME;
+
 
 /**
  * Adds a new shopping list
@@ -63,9 +63,6 @@ public class AddListDialogFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.dialog_add_list, null);
         mEditTextListName = rootView.findViewById(R.id.edit_text_list_name);
 
-        /**
-         * Call addShoppingList() when user taps "Done" keyboard action
-         */
         mEditTextListName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
@@ -96,10 +93,9 @@ public class AddListDialogFragment extends DialogFragment {
     public void addShoppingList() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        ShoppingList list = new ShoppingList(mEditTextListName.getText().toString(), "Michael");
+        ShoppingList list = new ShoppingList(mEditTextListName.getText().toString(), "Anonymous Owner");
 
-        db.collection(ACTIVE_LISTS).document(LISTNAME).set(list);
+        db.collection(ACTIVE_LISTS).add(list);
     }
-
 }
 
