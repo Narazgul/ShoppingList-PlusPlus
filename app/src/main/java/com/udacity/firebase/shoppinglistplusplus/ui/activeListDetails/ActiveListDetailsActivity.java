@@ -66,7 +66,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements ItemListA
     }
 
     private void setSupportActionBarTitle() {
-        db.collection(ACTIVE_LISTS).document(documentId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        db.collection(ACTIVE_LISTS).document(documentId).addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
