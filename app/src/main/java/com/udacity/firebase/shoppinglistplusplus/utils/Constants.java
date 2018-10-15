@@ -10,6 +10,7 @@ public final class Constants {
      * where active lists are stored (ie "activeLists")
      */
     public static final String ACTIVE_LISTS = "activeLists";
+    public static final String ITEMS = "items";
 
     /*
      * Shopping List
@@ -19,6 +20,13 @@ public final class Constants {
     public static final String SHOPPING_LIST_CREATED_AT = "createdAt";
     public static final String SHOPPING_LIST_LAST_EDITED = "lastEdited";
 
+    /*
+     * Item
+     */
+    public static final String ITEM_NAME = "itemName";
+    public static final String ITEM_OWNER = "owner";
+    public static final String ITEM_BOUGHT = "bought";
+    public static final String ITEM_BOUGHT_BY = "boughtBy";
 
 
     /**
