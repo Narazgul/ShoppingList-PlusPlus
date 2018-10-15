@@ -15,15 +15,23 @@ import com.udacity.firebase.shoppinglistplusplus.model.Item;
 
 public class ItemListAdapter extends FirestoreRecyclerAdapter<Item, ItemListAdapter.ItemViewHolder> {
 
-    public interface ItemClickListener {
-        void onItemClicked(String documentId);
+    public interface ItemDeleteClickListener {
+        void onItemDeleteClicked(String itemId);
     }
 
-    private ItemClickListener listener;
+    public interface ItemLongClickListener {
+        void onItemLongClicked(String itemId);
+    }
 
-    public ItemListAdapter(@NonNull FirestoreRecyclerOptions<Item> options, ItemClickListener listener) {
+    private ItemDeleteClickListener listener;
+    private ItemLongClickListener longListener;
+
+    public ItemListAdapter(@NonNull FirestoreRecyclerOptions<Item> options,
+                           ItemDeleteClickListener listener,
+                           ItemLongClickListener longListener) {
         super(options);
         this.listener = listener;
+        this.longListener = longListener;
     }
 
     @NonNull
@@ -37,6 +45,13 @@ public class ItemListAdapter extends FirestoreRecyclerAdapter<Item, ItemListAdap
     protected void onBindViewHolder(@NonNull ItemViewHolder holder, int position, @NonNull Item model) {
         final String documentId = getSnapshots().getSnapshot(position).getId();
         holder.bind(model, documentId);
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                longListener.onItemLongClicked(documentId);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -61,7 +76,7 @@ public class ItemListAdapter extends FirestoreRecyclerAdapter<Item, ItemListAdap
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onItemClicked(documentId);
+                    listener.onItemDeleteClicked(documentId);
                 }
             });
         }

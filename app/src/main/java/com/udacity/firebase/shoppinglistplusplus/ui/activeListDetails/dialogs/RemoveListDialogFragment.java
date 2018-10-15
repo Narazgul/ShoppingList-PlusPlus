@@ -40,8 +40,8 @@ public class RemoveListDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomTheme_Dialog)
-                .setTitle(getActivity().getResources().getString(R.string.action_remove_list))
-                .setMessage(getString(R.string.dialog_message_are_you_sure_remove_list))
+                .setTitle(getActivity().getResources().getString(R.string.action_remove_item))
+                .setMessage(getString(R.string.dialog_message_are_you_sure_remove_item))
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         removeList();

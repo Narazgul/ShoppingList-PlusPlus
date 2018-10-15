@@ -33,6 +33,8 @@ public final class Constants {
      * Constants for bundles, extras and shared preferences keys
      */
     public static final String CONSTANT_LIST_NAME = "listname";
+    public static final String CONSTANT_ITEM_NAME = "itemname";
+    public static final String CONSTANT_LIST_ID = "listId";
     public static final String CONSTANT_DOCUMENT_ID = "documentId";
     public static final String EXTRA_KEY_ID = "id";
 

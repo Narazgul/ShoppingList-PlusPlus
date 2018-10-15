@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -25,6 +24,7 @@ import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
 import com.udacity.firebase.shoppinglistplusplus.ui.BaseActivity;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.adapter.ItemListAdapter;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.AddItemDialogFragment;
+import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.EditListItemNameDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.EditListNameDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.RemoveListDialogFragment;
 
@@ -35,11 +35,11 @@ import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.EXTRA_KE
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ITEMS;
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ITEM_NAME;
 
-public class ActiveListDetailsActivity extends BaseActivity implements ItemListAdapter.ItemClickListener {
+public class ActiveListDetailsActivity extends BaseActivity implements ItemListAdapter.ItemDeleteClickListener, ItemListAdapter.ItemLongClickListener {
 
     public static final String TAG = ActiveListDetailsActivity.class.getSimpleName();
 
-    private String documentId;
+    private String listId;
     private ShoppingList shoppingList;
 
     @Override
@@ -53,7 +53,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements ItemListA
     private void initializeScreen() {
         Toolbar toolbar = findViewById(R.id.app_bar);
         if (getIntent() != null && getIntent().hasExtra(EXTRA_KEY_ID)) {
-            documentId = getIntent().getStringExtra(EXTRA_KEY_ID);
+            listId = getIntent().getStringExtra(EXTRA_KEY_ID);
         }
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -66,7 +66,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements ItemListA
     }
 
     private void setSupportActionBarTitle() {
-        db.collection(ACTIVE_LISTS).document(documentId).addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+        db.collection(ACTIVE_LISTS).document(listId).addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -93,7 +93,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements ItemListA
 
         Query query = db
                 .collection(ACTIVE_LISTS)
-                .document(documentId)
+                .document(listId)
                 .collection(ITEMS)
                 .orderBy(ITEM_NAME);
 
@@ -102,7 +102,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements ItemListA
                 .setLifecycleOwner(this)
                 .build();
 
-        return new ItemListAdapter(options, this);
+        return new ItemListAdapter(options, this, this);
     }
 
     @Override
@@ -127,23 +127,30 @@ public class ActiveListDetailsActivity extends BaseActivity implements ItemListA
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onItemDeleteClicked(String itemId) {
+        DialogFragment dialog = RemoveListDialogFragment.newInstance(shoppingList, itemId);
+        dialog.show(getSupportFragmentManager(), "RemoveListDialogFragment");
+    }
+
+    @Override
+    public void onItemLongClicked(String itemId) {
+        DialogFragment dialog = EditListItemNameDialogFragment.newInstance(listId, itemId);
+        dialog.show(getSupportFragmentManager(), "EditListNameDialogFragment");
+    }
+
     private void showEditListNameDialog() {
-        DialogFragment dialog = EditListNameDialogFragment.newInstance(shoppingList, documentId);
+        DialogFragment dialog = EditListNameDialogFragment.newInstance(shoppingList, listId);
         dialog.show(getSupportFragmentManager(), "EditListNameDialogFragment");
     }
 
     private void showDeleteListDialog() {
-        DialogFragment dialog = RemoveListDialogFragment.newInstance(shoppingList, documentId);
+        DialogFragment dialog = RemoveListDialogFragment.newInstance(shoppingList, listId);
         dialog.show(getSupportFragmentManager(), "RemoveListDialogFragment");
     }
 
     public void showAddItemDialog(View view) {
-        android.app.DialogFragment dialog = AddItemDialogFragment.newInstance(documentId);
+        android.app.DialogFragment dialog = AddItemDialogFragment.newInstance(listId);
         dialog.show(getFragmentManager(), "AddItemDialogFragment");
-    }
-
-    @Override
-    public void onItemClicked(String documentId) {
-        Toast.makeText(this, documentId, Toast.LENGTH_SHORT).show();
     }
 }

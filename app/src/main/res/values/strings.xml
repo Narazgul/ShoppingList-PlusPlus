@@ -50,6 +50,12 @@
     <!-- Add Item Dialog-->
     <string name="hint_add_item">Add item</string>
 
+    <!-- Edit Item Dialog-->
+    <string name="hint_edit_item">Edit item</string>
+
+    <!-- Remove Item Dialog-->
+    <string name="action_remove_item">Remove Item</string>
+
     <!-- Menu Items -->
     <string name="action_edit_list_name">Edit list name</string>
 
@@ -206,7 +212,6 @@
     <string name="pref_sort_list_label_list_name_entry">List Name</string>
     <string name="pref_sort_list_label_owner_entry">Owner Email</string>
     <string name="pref_sort_list_label_most_recently_changed_entry">Most Recently Changed</string>
-
 
     <!-- Values -->
 
