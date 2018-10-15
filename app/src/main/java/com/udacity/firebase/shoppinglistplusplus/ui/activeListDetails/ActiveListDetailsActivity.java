@@ -26,6 +26,7 @@ import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.adapter.It
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.AddItemDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.EditListItemNameDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.EditListNameDialogFragment;
+import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.RemoveItemDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.RemoveListDialogFragment;
 
 import javax.annotation.Nullable;
@@ -129,7 +130,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements ItemListA
 
     @Override
     public void onItemDeleteClicked(String itemId) {
-        DialogFragment dialog = RemoveListDialogFragment.newInstance(shoppingList, itemId);
+        DialogFragment dialog = RemoveItemDialogFragment.newInstance(listId, itemId);
         dialog.show(getSupportFragmentManager(), "RemoveListDialogFragment");
     }
 
