@@ -1,84 +1,55 @@
 package com.udacity.firebase.shoppinglistplusplus.ui.adapters;
 
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
-import com.udacity.firebase.shoppinglistplusplus.utils.Utils;
+import com.udacity.firebase.shoppinglistplusplus.ui.viewholders.ShoppingListViewHolder;
 
-import java.util.List;
-
-public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ShoppingListViewHolder> {
+public class ShoppingListAdapter extends FirestoreRecyclerAdapter<ShoppingList, ShoppingListViewHolder> {
 
     public interface ShoppingListItemClickListener {
-        void onItemClicked(int position);
+        void onItemClicked(String documentId);
     }
 
-    private List<ShoppingList> shoppingLists;
     private ShoppingListItemClickListener listener;
 
-    public ShoppingListAdapter(ShoppingListItemClickListener listener) {
+
+    public ShoppingListAdapter(@NonNull FirestoreRecyclerOptions<ShoppingList> options, ShoppingListItemClickListener listener) {
+        super(options);
         this.listener = listener;
     }
+
 
     @NonNull
     @Override
     public ShoppingListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         return new ShoppingListViewHolder(LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.single_active_list, viewGroup, false), listener);
+                .inflate(R.layout.single_active_list, viewGroup, false));
     }
+
 
     @Override
-    public void onBindViewHolder(@NonNull ShoppingListViewHolder shoppingListViewHolder, int position) {
-        shoppingListViewHolder.bind(shoppingLists.get(position));
+    protected void onBindViewHolder(@NonNull final ShoppingListViewHolder holder, final int position, @NonNull ShoppingList model) {
+        final String documentId = getSnapshots().getSnapshot(position).getId();
+        holder.bind(model);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClicked(documentId);
+            }
+        });
     }
+
 
     @Override
-    public int getItemCount() {
-        if (shoppingLists != null) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    public void updateShoppingList(List<ShoppingList> newShoppingList) {
-        if (newShoppingList != null && newShoppingList != shoppingLists) {
-            shoppingLists = newShoppingList;
-        }
-    }
-
-    static class ShoppingListViewHolder extends RecyclerView.ViewHolder {
-
-        TextView listName;
-        TextView createdBy;
-        TextView editTime;
-
-        ShoppingListViewHolder(@NonNull View itemView, final ShoppingListItemClickListener listener) {
-            super(itemView);
-
-            listName = itemView.findViewById(R.id.text_view_list_name);
-            createdBy = itemView.findViewById(R.id.text_view_created_by_user);
-            editTime = itemView.findViewById(R.id.text_view_edit_time);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClicked(getAdapterPosition());
-                }
-            });
-        }
-
-        void bind(ShoppingList list) {
-            listName.setText(list.getListName());
-            createdBy.setText(list.getOwner());
-            String formattedDate = Utils.SIMPLE_DATE_FORMAT.format(list.getTimestamp());
-            editTime.setText(formattedDate);
-        }
+    public void onDataChanged() {
+        super.onDataChanged();
+        // TODO update when emptyscreen should be shown
     }
 }

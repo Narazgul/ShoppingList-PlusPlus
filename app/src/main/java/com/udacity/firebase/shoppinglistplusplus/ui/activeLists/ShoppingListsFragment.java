@@ -1,45 +1,34 @@
 package com.udacity.firebase.shoppinglistplusplus.ui.activeLists;
 
-
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.firestore.SnapshotParser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBehavior;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.Query;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
+import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.ActiveListDetailsActivity;
 import com.udacity.firebase.shoppinglistplusplus.ui.adapters.ShoppingListAdapter;
-import com.udacity.firebase.shoppinglistplusplus.utils.Utils;
-
-import javax.annotation.Nullable;
 
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ACTIVE_LISTS;
-import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.LISTNAME;
+import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.EXTRA_KEY_ID;
+import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.SHOPPING_LIST_LAST_EDITED;
 
-
-/**
- * A simple {@link Fragment} subclass that shows a list of all shopping lists a user can see.
- * Use the {@link ShoppingListsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ShoppingListsFragment extends Fragment implements ShoppingListAdapter.ShoppingListItemClickListener {
     public static final String TAG = ShoppingListsFragment.class.getSimpleName();
-
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private TextView listName;
-    private TextView createdBy;
-    private TextView editTime;
 
     public ShoppingListsFragment() {
         /* Required empty public constructor */
@@ -55,7 +44,6 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListAdapt
         fragment.setArguments(args);
         return fragment;
     }
-    
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -75,34 +63,15 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListAdapt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        /**
-         * Initalize UI elements
-         */
+
         View rootView = inflater.inflate(R.layout.fragment_shopping_lists, container, false);
         initializeScreen(rootView);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(ACTIVE_LISTS).document(LISTNAME).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        rootView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-
-                if (snapshot != null && snapshot.exists()) {
-                    Log.d(TAG, "Current data: " + snapshot.getData());
-
-                    ShoppingList list = snapshot.toObject(ShoppingList.class);
-                    if (list != null) {
-                        listName.setText(list.getListName());
-                        createdBy.setText(list.getOwner());
-                        editTime.setText(Utils.SIMPLE_DATE_FORMAT.format(list.getTimestamp()));
-                    }
-                } else {
-                    Log.d(TAG, "Current data: null");
-                }
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), ActiveListDetailsActivity.class));
             }
         });
 
@@ -119,18 +88,44 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListAdapt
      * Link layout elements from XML
      */
     private void initializeScreen(View rootView) {
-        recyclerView = rootView.findViewById(R.id.recycler_view_active_lists);
+        RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view_active_lists);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ShoppingListAdapter(this);
-        recyclerView.setAdapter(adapter);
-        listName = rootView.findViewById(R.id.text_view_list_name);
-        createdBy = rootView.findViewById(R.id.text_view_created_by_user);
-        editTime = rootView.findViewById(R.id.text_view_edit_time);
+        recyclerView.setAdapter(newShoppingListsAdapter());
+    }
+
+    private FirestoreRecyclerAdapter newShoppingListsAdapter() {
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        final FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .build();
+        firestore.setFirestoreSettings(settings);
+
+        Query query = firestore
+                .collection(ACTIVE_LISTS)
+                .orderBy(SHOPPING_LIST_LAST_EDITED);
+
+        final SnapshotParser<ShoppingList> parser = new SnapshotParser<ShoppingList>() {
+            @NonNull
+            @Override
+            public ShoppingList parseSnapshot(@NonNull DocumentSnapshot snapshot) {
+                return snapshot.toObject(ShoppingList.class, ServerTimestampBehavior.ESTIMATE);
+            }
+        };
+
+        FirestoreRecyclerOptions<ShoppingList> options = new FirestoreRecyclerOptions.Builder<ShoppingList>()
+                .setQuery(query, parser)
+                .setLifecycleOwner(getActivity())
+                .build();
+
+        return new ShoppingListAdapter(options, this);
     }
 
     @Override
-    public void onItemClicked(int position) {
-        Toast.makeText(getContext(), "Clicked position: " + position, Toast.LENGTH_SHORT).show();
+    public void onItemClicked(String documentId) {
+        Intent intent = new Intent(getContext(), ActiveListDetailsActivity.class);
+        intent.putExtra(EXTRA_KEY_ID, documentId);
+        startActivity(intent);
     }
 }
