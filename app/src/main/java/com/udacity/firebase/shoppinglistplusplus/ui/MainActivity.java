@@ -13,8 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.udacity.firebase.shoppinglistplusplus.R;
-import com.udacity.firebase.shoppinglistplusplus.ui.activeLists.AddListDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeLists.ShoppingListsFragment;
+import com.udacity.firebase.shoppinglistplusplus.ui.activeLists.dialogs.AddListDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.meals.AddMealDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.meals.MealsFragment;
 

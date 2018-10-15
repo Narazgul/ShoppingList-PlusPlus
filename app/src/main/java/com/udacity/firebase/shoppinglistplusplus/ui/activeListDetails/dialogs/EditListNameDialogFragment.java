@@ -1,4 +1,4 @@
-package com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails;
+package com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

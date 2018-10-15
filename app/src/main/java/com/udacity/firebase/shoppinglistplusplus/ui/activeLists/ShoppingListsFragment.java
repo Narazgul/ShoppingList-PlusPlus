@@ -21,6 +21,7 @@ import com.google.firebase.firestore.Query;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.ActiveListDetailsActivity;
+import com.udacity.firebase.shoppinglistplusplus.ui.activeLists.adapter.ShoppingListAdapter;
 
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ACTIVE_LISTS;
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.EXTRA_KEY_ID;
