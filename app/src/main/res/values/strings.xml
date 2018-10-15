@@ -47,6 +47,9 @@
     <!-- Activity Title  -->
     <string name="title_activity_list_details">List Details</string>
 
+    <!-- Add Item Dialog-->
+    <string name="hint_add_item">Add item</string>
+
     <!-- Menu Items -->
     <string name="action_edit_list_name">Edit list name</string>
 

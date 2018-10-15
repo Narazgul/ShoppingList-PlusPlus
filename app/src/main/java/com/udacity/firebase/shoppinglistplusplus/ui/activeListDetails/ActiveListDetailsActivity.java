@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -17,6 +16,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
 import com.udacity.firebase.shoppinglistplusplus.ui.BaseActivity;
+import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.AddItemDialogFragment;
+import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.EditListNameDialogFragment;
+import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.RemoveListDialogFragment;
 
 import javax.annotation.Nullable;
 
@@ -101,6 +103,7 @@ public class ActiveListDetailsActivity extends BaseActivity {
     }
 
     public void showAddItemDialog(View view) {
-        Toast.makeText(this, "Toasty", Toast.LENGTH_SHORT).show();
+        android.app.DialogFragment dialog = AddItemDialogFragment.newInstance(documentId);
+        dialog.show(getFragmentManager(), "AddItemDialogFragment");
     }
 }
