@@ -57,7 +57,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements ItemListA
         }
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setActionbarTitle();
+        setSupportActionBarTitle();
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view_items);
         recyclerView.setHasFixedSize(true);
@@ -65,7 +65,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements ItemListA
         recyclerView.setAdapter(newItemListsAdapter());
     }
 
-    private void setActionbarTitle() {
+    private void setSupportActionBarTitle() {
         db.collection(ACTIVE_LISTS).document(documentId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
