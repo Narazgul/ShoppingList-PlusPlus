@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.udacity.firebase.shoppinglistplusplus.R;
 
 /**
@@ -16,10 +17,13 @@ import com.udacity.firebase.shoppinglistplusplus.R;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
+    public FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        db = FirebaseFirestore.getInstance();
     }
 
     @Override
