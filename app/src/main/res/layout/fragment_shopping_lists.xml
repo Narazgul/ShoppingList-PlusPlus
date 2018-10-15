@@ -12,8 +12,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include layout="@layout/single_active_list" />
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view_active_lists"
             android:scrollbars="vertical"
@@ -30,7 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:onClick="showAddListDialog"
         android:src="@drawable/icon_add"
         app:borderWidth="0dp"
