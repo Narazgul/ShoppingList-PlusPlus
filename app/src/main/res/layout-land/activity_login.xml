@@ -68,15 +68,14 @@
         android:layout_height="@dimen/input_field_height_land"
         android:layout_marginBottom="@dimen/lv_header_text_size"
         android:background="@color/primary"
-        android:onClick="onSignInPressed"
+        android:onClick="signInWithEmailAndPassword"
         android:text="@string/button_signin_with_password"
         android:textColor="@android:color/white" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/login_with_google"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onSignInWithGooglePressed" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="match_parent"
