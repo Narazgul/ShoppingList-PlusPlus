@@ -15,11 +15,12 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.udacity.firebase.shoppinglistplusplus.R;
 
 public class CreateAccountActivity extends BaseLoginActivity {
     private static final String TAG = CreateAccountActivity.class.getSimpleName();
-
 
     private EditText username, email, password;
     private ProgressDialog authProgressDialog;
@@ -31,7 +32,6 @@ public class CreateAccountActivity extends BaseLoginActivity {
 
         initializeScreen();
     }
-
 
 
     public void initializeScreen() {
@@ -58,7 +58,7 @@ public class CreateAccountActivity extends BaseLoginActivity {
     }
 
     public void onCreateAccountPressed(View view) {
-        String user = username.getText().toString();
+        final String user = username.getText().toString();
         String mail = email.getText().toString();
         String pw = password.getText().toString();
 
@@ -70,10 +70,12 @@ public class CreateAccountActivity extends BaseLoginActivity {
                     authProgressDialog.dismiss();
                     if (task.isSuccessful()) {
                         Log.d(TAG, "createUserWithEmail:success");
-                        Toast.makeText(CreateAccountActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
+                        FirebaseUser firebaseUser = auth.getCurrentUser();
+                        setUsername(user, firebaseUser);
+                        finish();
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                        showErrorToast("User could not be created: " + task.getException());
+                        showErrorToast(task.getException().getMessage());
                     }
                 }
             });
@@ -107,5 +109,21 @@ public class CreateAccountActivity extends BaseLoginActivity {
 
     private void showErrorToast(String message) {
         Toast.makeText(CreateAccountActivity.this, message, Toast.LENGTH_LONG).show();
+    }
+
+    private void setUsername(String username, FirebaseUser user) {
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(username)
+                .build();
+
+        user.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User profile updated.");
+                        }
+                    }
+                });
     }
 }
