@@ -1,5 +1,6 @@
 package com.udacity.firebase.shoppinglistplusplus.ui.activeLists;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,11 +15,10 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.DocumentSnapshot.ServerTimestampBehavior;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
+import com.udacity.firebase.shoppinglistplusplus.ui.MainActivity;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.ActiveListDetailsActivity;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeLists.adapter.ShoppingListAdapter;
 
@@ -29,8 +29,9 @@ import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.SHOPPING
 public class ShoppingListsFragment extends Fragment implements ShoppingListAdapter.ShoppingListItemClickListener {
     public static final String TAG = ShoppingListsFragment.class.getSimpleName();
 
+    private MainActivity activity;
+
     public ShoppingListsFragment() {
-        /* Required empty public constructor */
     }
 
     /**
@@ -57,6 +58,13 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListAdapt
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        activity = ((MainActivity) getActivity());
     }
 
     @Override
@@ -95,13 +103,7 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListAdapt
 
     private ShoppingListAdapter newShoppingListsAdapter() {
 
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        final FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setTimestampsInSnapshotsEnabled(true)
-                .build();
-        firestore.setFirestoreSettings(settings);
-
-        Query query = firestore
+        Query query = activity.db
                 .collection(ACTIVE_LISTS)
                 .orderBy(SHOPPING_LIST_LAST_EDITED);
 

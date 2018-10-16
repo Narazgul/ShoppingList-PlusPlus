@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.ui.login.LoginActivity;
 
@@ -26,6 +27,14 @@ public abstract class BaseActivity extends AppCompatActivity implements Firebase
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        setFirestoreSettings();
+    }
+
+    private void setFirestoreSettings() {
+        final FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
     }
 
     @Override
@@ -54,7 +63,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Firebase
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_base, menu);
-        return super.onCreateOptionsMenu(menu);
+
+        return true;
     }
 
     @Override
