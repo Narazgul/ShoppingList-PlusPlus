@@ -15,7 +15,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.Item;
@@ -27,6 +26,7 @@ import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.Ed
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.EditListNameDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.RemoveItemDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.RemoveListDialogFragment;
+import com.udacity.firebase.shoppinglistplusplus.utils.Utils;
 
 import javax.annotation.Nullable;
 
@@ -40,6 +40,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements
 
     public static final String TAG = ActiveListDetailsActivity.class.getSimpleName();
 
+    private Boolean userIsOwner;
     private String listId;
     private ShoppingList shoppingList;
 
@@ -77,6 +78,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements
 
                 if (snapshot != null && snapshot.exists()) {
                     shoppingList = snapshot.toObject(ShoppingList.class);
+                    userIsOwner = Utils.checkIfOwner(shoppingList, userDisplayName);
                 } else {
                     finish();
                     return;
@@ -87,11 +89,6 @@ public class ActiveListDetailsActivity extends BaseActivity implements
     }
 
     private RecyclerView.Adapter newItemListsAdapter() {
-        final FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setTimestampsInSnapshotsEnabled(true)
-                .build();
-        db.setFirestoreSettings(settings);
-
         Query query = db
                 .collection(ACTIVE_LISTS)
                 .document(listId)
@@ -108,9 +105,14 @@ public class ActiveListDetailsActivity extends BaseActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_detail, menu);
-        return true;
+
+        MenuItem edit = menu.findItem(R.id.action_edit);
+        MenuItem delete = menu.findItem(R.id.action_delete);
+        edit.setVisible(userIsOwner);
+        delete.setVisible(userIsOwner);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

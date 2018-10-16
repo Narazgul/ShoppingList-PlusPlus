@@ -36,6 +36,7 @@ public final class Constants {
     public static final String CONSTANT_ITEM_NAME = "itemname";
     public static final String CONSTANT_LIST_ID = "listId";
     public static final String CONSTANT_DOCUMENT_ID = "documentId";
+    public static final String PREFS_DISPLAY_NAME = "displayname";
     public static final String EXTRA_KEY_ID = "id";
 
 

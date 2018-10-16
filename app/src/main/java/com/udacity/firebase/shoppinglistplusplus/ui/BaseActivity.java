@@ -1,7 +1,9 @@
 package com.udacity.firebase.shoppinglistplusplus.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,16 +17,22 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.ui.login.LoginActivity;
 
+import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.PREFS_DISPLAY_NAME;
+
 public abstract class BaseActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
 
+    public SharedPreferences prefs;
     public FirebaseAuth auth;
     public FirebaseUser user;
     public FirebaseFirestore db;
+    public String userDisplayName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        userDisplayName = prefs.getString(PREFS_DISPLAY_NAME, null);
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         setFirestoreSettings();
@@ -54,16 +62,20 @@ public abstract class BaseActivity extends AppCompatActivity implements Firebase
         user = firebaseAuth.getCurrentUser();
         if (user != null) {
             Log.d("AuthStateListener", "Logged in");
+            saveUserToPreferences(user);
         } else {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         }
     }
 
+    private void saveUserToPreferences(FirebaseUser user) {
+        prefs.edit().putString(PREFS_DISPLAY_NAME, user.getDisplayName()).apply();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_base, menu);
-
         return true;
     }
 
@@ -83,5 +95,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Firebase
 
     public void logoutUser() {
         auth.signOut();
+        prefs.edit().putString(PREFS_DISPLAY_NAME, null).apply();
     }
 }
