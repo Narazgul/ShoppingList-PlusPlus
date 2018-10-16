@@ -4,14 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,16 +30,6 @@ public class LoginActivity extends BaseLoginActivity {
         setContentView(R.layout.activity_login);
 
         initializeScreen();
-
-        password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE || keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                    // signIn
-                }
-                return true;
-            }
-        });
     }
 
     public void initializeScreen() {
@@ -65,22 +53,42 @@ public class LoginActivity extends BaseLoginActivity {
 
 
     public void onSignInPressed(View view) {
-        auth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
-                        } else {
-                            Log.d(TAG, task.getException().toString());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+        String mail = email.getText().toString();
+        String pw = password.getText().toString();
+
+        if (isEmailEntered(mail) && isPasswordEntered(pw)) {
+            auth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                finish();
+                            } else {
+                                Log.d(TAG, "createUserWithEmail:failure", task.getException());
+                                Toast.makeText(LoginActivity.this, task.getException().getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+        }
     }
 
+    private boolean isEmailEntered(String email) {
+        if (TextUtils.isEmpty(email)) {
+            this.email.setError("No email entered");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isPasswordEntered(String password) {
+        if (TextUtils.isEmpty(password)) {
+            this.password.setError("No password entered");
+            return false;
+        }
+        return true;
+    }
 
     public void onSignUpPressed(View view) {
         Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
