@@ -2,26 +2,25 @@ package com.udacity.firebase.shoppinglistplusplus.ui;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeLists.ShoppingListsFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.activeLists.dialogs.AddListDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.meals.AddMealDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.ui.meals.MealsFragment;
 
-/**
- * Represents the home screen of the app which
- * has a {@link ViewPager} with {@link ShoppingListsFragment} and {@link MealsFragment}
- */
 public class MainActivity extends BaseActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -39,10 +38,24 @@ public class MainActivity extends BaseActivity {
         Toolbar toolbar = findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
 
+
         SectionPagerAdapter adapter = new SectionPagerAdapter(getSupportFragmentManager());
         viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        super.onAuthStateChanged(firebaseAuth);
+        updateUi();
+    }
+
+    private void updateUi() {
+        if (user != null && !TextUtils.isEmpty(user.getDisplayName())) {
+            String title = user.getDisplayName() + "'s Lists";
+            getSupportActionBar().setTitle(title);
+        }
     }
 
     @Override
