@@ -3,64 +3,53 @@ package com.udacity.firebase.shoppinglistplusplus.ui.login;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.udacity.firebase.shoppinglistplusplus.R;
-import com.udacity.firebase.shoppinglistplusplus.ui.BaseActivity;
 
-public class CreateAccountActivity extends BaseActivity {
+public class CreateAccountActivity extends BaseLoginActivity {
+    private static final String TAG = CreateAccountActivity.class.getSimpleName();
 
-    private static final String LOG_TAG = CreateAccountActivity.class.getSimpleName();
-    private ProgressDialog mAuthProgressDialog;
-    private EditText mEditTextUsernameCreate, mEditTextEmailCreate, mEditTextPasswordCreate;
 
+    private EditText username, email, password;
+    private ProgressDialog authProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
 
-        /**
-         * Link layout elements from XML and setup the progress dialog
-         */
         initializeScreen();
     }
 
-    /**
-     * Override onCreateOptionsMenu to inflate nothing
-     *
-     * @param menu The menu with which nothing will happen
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
 
 
-    /**
-     * Link layout elements from XML and setup the progress dialog
-     */
     public void initializeScreen() {
-        mEditTextUsernameCreate = (EditText) findViewById(R.id.edit_text_username_create);
-        mEditTextEmailCreate = (EditText) findViewById(R.id.edit_text_email_create);
-        mEditTextPasswordCreate = (EditText) findViewById(R.id.edit_text_password_create);
-        LinearLayout linearLayoutCreateAccountActivity = (LinearLayout) findViewById(R.id.linear_layout_create_account_activity);
-        initializeBackground(linearLayoutCreateAccountActivity);
+
+        username = findViewById(R.id.edit_text_username_create);
+        email = findViewById(R.id.edit_text_email_create);
+        password = findViewById(R.id.edit_text_password_create);
+
+        LinearLayout linearLayout = findViewById(R.id.linear_layout_create_account_activity);
+        initializeBackground(linearLayout);
 
         /* Setup the progress dialog that is displayed later when authenticating with Firebase */
-        mAuthProgressDialog = new ProgressDialog(this);
-        mAuthProgressDialog.setTitle(getResources().getString(R.string.progress_dialog_loading));
-        mAuthProgressDialog.setMessage(getResources().getString(R.string.progress_dialog_creating_user_with_firebase));
-        mAuthProgressDialog.setCancelable(false);
+        authProgressDialog = new ProgressDialog(this);
+        authProgressDialog.setTitle(getResources().getString(R.string.progress_dialog_loading));
+        authProgressDialog.setMessage(getResources().getString(R.string.progress_dialog_creating_user_with_firebase));
+        authProgressDialog.setCancelable(false);
     }
 
-    /**
-     * Open LoginActivity when user taps on "Sign in" textView
-     */
     public void onSignInPressed(View view) {
         Intent intent = new Intent(CreateAccountActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -68,34 +57,54 @@ public class CreateAccountActivity extends BaseActivity {
         finish();
     }
 
-    /**
-     * Create new account using Firebase email/password provider
-     */
     public void onCreateAccountPressed(View view) {
+        String user = username.getText().toString();
+        String mail = email.getText().toString();
+        String pw = password.getText().toString();
 
-    }
-
-    /**
-     * Creates a new user in Firebase from the Java POJO
-     */
-    private void createUserInFirebaseHelper(final String encodedEmail) {
+        if (isUserNameValid(user) && isEmailValid(mail) && isPasswordValid(pw)) {
+            authProgressDialog.show();
+            auth.createUserWithEmailAndPassword(mail, pw).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    authProgressDialog.dismiss();
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "createUserWithEmail:success");
+                        Toast.makeText(CreateAccountActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                        showErrorToast("User could not be created: " + task.getException());
+                    }
+                }
+            });
+        }
     }
 
     private boolean isEmailValid(String email) {
+        Boolean emailValidation = Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        if (!emailValidation) {
+            this.email.setError("Please type in a valid email address");
+            return false;
+        }
         return true;
     }
 
     private boolean isUserNameValid(String userName) {
+        if (TextUtils.isEmpty(userName) || userName.length() < 3) {
+            this.username.setError("Your username must have at least 3 characters");
+            return false;
+        }
         return true;
     }
 
     private boolean isPasswordValid(String password) {
+        if (TextUtils.isEmpty(password) || password.length() < 6) {
+            this.password.setError("You must have at least 6 characters in your password");
+            return false;
+        }
         return true;
     }
 
-    /**
-     * Show error toast to users
-     */
     private void showErrorToast(String message) {
         Toast.makeText(CreateAccountActivity.this, message, Toast.LENGTH_LONG).show();
     }
