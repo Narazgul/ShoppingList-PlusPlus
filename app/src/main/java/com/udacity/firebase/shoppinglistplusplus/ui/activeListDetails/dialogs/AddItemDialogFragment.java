@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.Item;
@@ -99,9 +102,15 @@ public class AddItemDialogFragment extends DialogFragment {
      */
     public void addItem() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        String username = "Anonymous Owner";
+        if (user != null && !TextUtils.isEmpty(user.getDisplayName())) {
+            username = user.getDisplayName();
+        }
 
         String documentId = getArguments().getString(EXTRA_KEY_ID);
-        Item item = new Item(mEditTextListName.getText().toString(), "Anonymous Owner");
+        Item item = new Item(mEditTextListName.getText().toString(), username);
 
         db.collection(ACTIVE_LISTS).document(documentId).collection(ITEMS).add(item);
     }
