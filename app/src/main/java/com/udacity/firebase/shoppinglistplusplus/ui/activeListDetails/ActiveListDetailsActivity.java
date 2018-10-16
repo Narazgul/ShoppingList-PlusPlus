@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -36,7 +35,8 @@ import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.EXTRA_KE
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ITEMS;
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ITEM_NAME;
 
-public class ActiveListDetailsActivity extends BaseActivity implements ItemListAdapter.ItemDeleteClickListener, ItemListAdapter.ItemLongClickListener {
+public class ActiveListDetailsActivity extends BaseActivity implements
+        ItemListAdapter.ItemDeleteClickListener, ItemListAdapter.ItemLongClickListener {
 
     public static final String TAG = ActiveListDetailsActivity.class.getSimpleName();
 
@@ -108,8 +108,8 @@ public class ActiveListDetailsActivity extends BaseActivity implements ItemListA
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_detail, menu);
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
         return true;
     }
 
