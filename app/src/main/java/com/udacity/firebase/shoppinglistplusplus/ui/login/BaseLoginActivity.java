@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.ui.MainActivity;
 
-public class BaseLoginActivity extends AppCompatActivity {
+public abstract class BaseLoginActivity extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseUser user;
 
