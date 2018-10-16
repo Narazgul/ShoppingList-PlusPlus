@@ -1,65 +1,77 @@
 package com.udacity.firebase.shoppinglistplusplus.ui;
 
-import android.content.res.Configuration;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.udacity.firebase.shoppinglistplusplus.R;
+import com.udacity.firebase.shoppinglistplusplus.ui.login.LoginActivity;
 
-/**
- * BaseActivity class is used as a base class for all activities in the app
- * It implements GoogleApiClient callbacks to enable "Logout" in all activities
- * and defines variables that are being shared across all activities
- */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
 
+    public FirebaseAuth auth;
+    public FirebaseUser user;
     public FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onStart() {
+        super.onStart();
+        auth.addAuthStateListener(this);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    protected void onStop() {
+        super.onStop();
+        auth.removeAuthStateListener(this);
+    }
+
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        user = firebaseAuth.getCurrentUser();
+        if (user != null) {
+            Log.d("AuthStateListener", "Logged in");
+        } else {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        /* Inflate the menu; this adds items to the action bar if it is present. */
         getMenuInflater().inflate(R.menu.menu_base, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == android.R.id.home) {
-            super.onBackPressed();
-            return true;
+        switch (id) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+            case R.id.action_logout:
+                logoutUser();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    protected void initializeBackground(LinearLayout linearLayout) {
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            linearLayout.setBackgroundResource(R.drawable.background_loginscreen_land);
-        } else {
-            linearLayout.setBackgroundResource(R.drawable.background_loginscreen);
-        }
+    public void logoutUser() {
+        auth.signOut();
     }
 }
