@@ -6,23 +6,32 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.ui.MainActivity;
 
 public class LoginActivity extends BaseLoginActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
+    private static final int RC_SIGN_IN = 1;
 
-    private ProgressDialog mAuthProgressDialog;
+    private GoogleSignInClient googleSignInClient;
     private EditText email, password;
+    private SignInButton googleSign;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,29 +39,39 @@ public class LoginActivity extends BaseLoginActivity {
         setContentView(R.layout.activity_login);
 
         initializeScreen();
+        getGoogleSignInClient();
     }
 
-    public void initializeScreen() {
+    private void initializeScreen() {
 
         email = findViewById(R.id.edit_text_email);
         password = findViewById(R.id.edit_text_password);
+        googleSign = findViewById(R.id.login_with_google);
+        googleSign.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signInWithGoogle();
+            }
+        });
 
         LinearLayout linearLayoutLoginActivity = findViewById(R.id.linear_layout_login_activity);
         initializeBackground(linearLayoutLoginActivity);
 
-        mAuthProgressDialog = new ProgressDialog(this);
+        ProgressDialog mAuthProgressDialog = new ProgressDialog(this);
         mAuthProgressDialog.setTitle(getString(R.string.progress_dialog_loading));
         mAuthProgressDialog.setMessage(getString(R.string.progress_dialog_authenticating_with_firebase));
         mAuthProgressDialog.setCancelable(false);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
+    private void getGoogleSignInClient() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("224562226924-01patmmjtd9cl0qa4lrncdpbbg2coi8m.apps.googleusercontent.com")
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
-
-    public void onSignInPressed(View view) {
+    public void signInWithEmailAndPassword(View view) {
         String mail = email.getText().toString();
         String pw = password.getText().toString();
 
@@ -90,8 +109,49 @@ public class LoginActivity extends BaseLoginActivity {
         return true;
     }
 
+    public void signInWithGoogle() {
+        Intent signInIntent = googleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                Log.w(TAG, "Google sign in failed", e);
+            }
+        }
+    }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        auth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
+                        } else {
+                            Log.d(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(LoginActivity.this, task.getException().getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
     public void onSignUpPressed(View view) {
         Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
         startActivity(intent);
     }
 }
+
