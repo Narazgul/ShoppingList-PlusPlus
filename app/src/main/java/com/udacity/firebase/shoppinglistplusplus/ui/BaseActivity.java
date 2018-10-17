@@ -18,6 +18,7 @@ import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.ui.login.LoginActivity;
 
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.PREFS_DISPLAY_NAME;
+import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.PREFS_UID;
 
 public abstract class BaseActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
 
@@ -25,13 +26,14 @@ public abstract class BaseActivity extends AppCompatActivity implements Firebase
     public FirebaseAuth auth;
     public FirebaseUser user;
     public FirebaseFirestore db;
-    public String userDisplayName;
+    public String userDisplayName, userUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        userUid = prefs.getString(PREFS_UID, null);
         userDisplayName = prefs.getString(PREFS_DISPLAY_NAME, null);
         auth = FirebaseAuth.getInstance();
         auth.useAppLanguage();
@@ -71,7 +73,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Firebase
     }
 
     private void saveUserToPreferences(FirebaseUser user) {
-        prefs.edit().putString(PREFS_DISPLAY_NAME, user.getDisplayName()).apply();
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PREFS_UID, user.getUid());
+        editor.putString(PREFS_DISPLAY_NAME, user.getDisplayName());
+        editor.apply();
     }
 
     @Override
@@ -96,6 +101,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Firebase
 
     public void logoutUser() {
         auth.signOut();
-        prefs.edit().putString(PREFS_DISPLAY_NAME, null).apply();
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PREFS_UID, null);
+        editor.putString(PREFS_DISPLAY_NAME, null);
+        editor.apply();
     }
 }
