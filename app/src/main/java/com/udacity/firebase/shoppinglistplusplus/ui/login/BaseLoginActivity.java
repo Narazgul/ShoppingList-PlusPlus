@@ -1,8 +1,10 @@
 package com.udacity.firebase.shoppinglistplusplus.ui.login;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -14,6 +16,8 @@ import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.ui.MainActivity;
 
 public abstract class BaseLoginActivity extends AppCompatActivity {
+
+    SharedPreferences prefs;
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -21,7 +25,9 @@ public abstract class BaseLoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         auth = FirebaseAuth.getInstance();
+        auth.useAppLanguage();
         user = auth.getCurrentUser();
     }
 

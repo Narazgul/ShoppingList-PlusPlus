@@ -25,13 +25,14 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.ui.MainActivity;
 
+import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.PREFS_USER_EMAIL;
+
 public class LoginActivity extends BaseLoginActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 1;
 
     private GoogleSignInClient googleSignInClient;
     private EditText email, password;
-    private SignInButton googleSign;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +43,38 @@ public class LoginActivity extends BaseLoginActivity {
         getGoogleSignInClient();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        String userEmail = prefs.getString(PREFS_USER_EMAIL, null);
+        if (userEmail != null) {
+            email.setText(userEmail);
+            prefs.edit().putString(PREFS_USER_EMAIL, null).apply();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                Log.w(TAG, "Google sign in failed", e);
+            }
+        }
+    }
+
     private void initializeScreen() {
 
         email = findViewById(R.id.edit_text_email);
         password = findViewById(R.id.edit_text_password);
-        googleSign = findViewById(R.id.login_with_google);
+
+        SignInButton googleSign = findViewById(R.id.login_with_google);
         googleSign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,7 +103,7 @@ public class LoginActivity extends BaseLoginActivity {
         String mail = email.getText().toString();
         String pw = password.getText().toString();
 
-        if (isEmailEntered(mail) && isPasswordEntered(pw)) {
+        if (isEmailEntered(mail) && isPasswordValid(pw)) {
             auth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -101,9 +129,9 @@ public class LoginActivity extends BaseLoginActivity {
         return true;
     }
 
-    private boolean isPasswordEntered(String password) {
-        if (TextUtils.isEmpty(password)) {
-            this.password.setError("No password entered");
+    private boolean isPasswordValid(String password) {
+        if (TextUtils.isEmpty(password) && password.length() < 6) {
+            this.password.setError("You must have at least 6 characters in your password");
             return false;
         }
         return true;
@@ -112,21 +140,6 @@ public class LoginActivity extends BaseLoginActivity {
     public void signInWithGoogle() {
         Intent signInIntent = googleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            } catch (ApiException e) {
-                Log.w(TAG, "Google sign in failed", e);
-            }
-        }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -154,4 +167,3 @@ public class LoginActivity extends BaseLoginActivity {
         startActivity(intent);
     }
 }
-

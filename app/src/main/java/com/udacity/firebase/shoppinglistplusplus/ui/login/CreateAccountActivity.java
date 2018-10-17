@@ -1,6 +1,7 @@
 package com.udacity.firebase.shoppinglistplusplus.ui.login;
 
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,10 +20,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.udacity.firebase.shoppinglistplusplus.R;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+
+import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.PREFS_USER_EMAIL;
+
 public class CreateAccountActivity extends BaseLoginActivity {
     private static final String TAG = CreateAccountActivity.class.getSimpleName();
 
-    private EditText username, email, password;
+    private EditText username, email;
     private ProgressDialog authProgressDialog;
 
     @Override
@@ -33,12 +39,10 @@ public class CreateAccountActivity extends BaseLoginActivity {
         initializeScreen();
     }
 
-
     public void initializeScreen() {
 
         username = findViewById(R.id.edit_text_username_create);
         email = findViewById(R.id.edit_text_email_create);
-        password = findViewById(R.id.edit_text_password_create);
 
         LinearLayout linearLayout = findViewById(R.id.linear_layout_create_account_activity);
         initializeBackground(linearLayout);
@@ -60,9 +64,9 @@ public class CreateAccountActivity extends BaseLoginActivity {
     public void onCreateAccountPressed(View view) {
         final String user = username.getText().toString();
         String mail = email.getText().toString();
-        String pw = password.getText().toString();
+        String pw = generateInitialPassword();
 
-        if (isUserNameValid(user) && isEmailValid(mail) && isPasswordValid(pw)) {
+        if (isUserNameValid(user) && isEmailValid(mail)) {
             authProgressDialog.show();
             auth.createUserWithEmailAndPassword(mail, pw).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
@@ -71,8 +75,10 @@ public class CreateAccountActivity extends BaseLoginActivity {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "createUserWithEmail:success");
                         FirebaseUser firebaseUser = auth.getCurrentUser();
-                        setUsername(user, firebaseUser);
-                        finish();
+                        if (firebaseUser != null) {
+                            setUsername(user, firebaseUser);
+                            sendPasswordResetEmail(firebaseUser);
+                        }
                     } else {
                         Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         showErrorToast(task.getException().getMessage());
@@ -99,16 +105,9 @@ public class CreateAccountActivity extends BaseLoginActivity {
         return true;
     }
 
-    private boolean isPasswordValid(String password) {
-        if (TextUtils.isEmpty(password) || password.length() < 6) {
-            this.password.setError("You must have at least 6 characters in your password");
-            return false;
-        }
-        return true;
-    }
-
-    private void showErrorToast(String message) {
-        Toast.makeText(CreateAccountActivity.this, message, Toast.LENGTH_LONG).show();
+    private String generateInitialPassword() {
+        SecureRandom r = new SecureRandom();
+        return new BigInteger(130, r).toString(32);
     }
 
     private void setUsername(String username, FirebaseUser user) {
@@ -122,8 +121,50 @@ public class CreateAccountActivity extends BaseLoginActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "User profile updated.");
+                        } else {
+                            Log.d(TAG, task.getException().getMessage());
                         }
                     }
                 });
+    }
+
+    private void sendPasswordResetEmail(final FirebaseUser user) {
+        String userEmail = user.getEmail();
+
+        if (userEmail != null) {
+            auth.sendPasswordResetEmail(userEmail)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "Email sent.");
+                                saveEmailToSharedPreferences(user);
+                                sendPasswordResetEmail(user);
+                                startEmailApp();
+                                finish();
+                            } else {
+                                Log.d(TAG, task.getException().getMessage());
+                            }
+                        }
+                    });
+        }
+    }
+
+    private void saveEmailToSharedPreferences(FirebaseUser user) {
+        prefs.edit().putString(PREFS_USER_EMAIL, user.getEmail()).apply();
+    }
+
+    private void startEmailApp() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    private void showErrorToast(String message) {
+        Toast.makeText(CreateAccountActivity.this, message, Toast.LENGTH_LONG).show();
     }
 }

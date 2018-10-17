@@ -34,6 +34,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Firebase
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         userDisplayName = prefs.getString(PREFS_DISPLAY_NAME, null);
         auth = FirebaseAuth.getInstance();
+        auth.useAppLanguage();
         db = FirebaseFirestore.getInstance();
         setFirestoreSettings();
     }
