@@ -8,7 +8,8 @@
     android:foreground="?selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/margin_small">
+    android:paddingStart="@dimen/margin_small"
+    android:paddingEnd="@dimen/margin_small">
 
     <TextView
         android:id="@+id/text_view_active_list_item_name"
@@ -22,7 +23,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
         android:layout_marginTop="2dp"
         android:text="@string/bought_by"
         android:textColor="@color/light_black"

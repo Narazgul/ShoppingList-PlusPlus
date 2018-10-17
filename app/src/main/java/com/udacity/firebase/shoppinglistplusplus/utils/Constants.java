@@ -5,12 +5,9 @@ package com.udacity.firebase.shoppinglistplusplus.utils;
  */
 public final class Constants {
 
-    /**
-     * Constants related to locations in Firebase, such as the name of the node
-     * where active lists are stored (ie "activeLists")
-     */
     public static final String ACTIVE_LISTS = "activeLists";
     public static final String ITEMS = "items";
+    public static final String ACTIVE_SHOPPERS = "activeShoppers";
 
     /*
      * Shopping List
@@ -19,6 +16,12 @@ public final class Constants {
     public static final String SHOPPING_LIST_OWNER = "owner";
     public static final String SHOPPING_LIST_CREATED_AT = "createdAt";
     public static final String SHOPPING_LIST_LAST_EDITED = "lastEdited";
+
+    /*
+     * Shopping List Active Shoppers
+     */
+    public static final String USERES_SHOPPING = "usersShopping";
+
 
     /*
      * Item
@@ -36,6 +39,7 @@ public final class Constants {
     public static final String CONSTANT_ITEM_NAME = "itemname";
     public static final String CONSTANT_LIST_ID = "listId";
     public static final String CONSTANT_DOCUMENT_ID = "documentId";
+    public static final String PREFS_UID = "uid";
     public static final String PREFS_DISPLAY_NAME = "displayname";
     public static final String PREFS_USER_EMAIL = "email";
     public static final String EXTRA_KEY_ID = "id";

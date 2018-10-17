@@ -129,7 +129,7 @@ public class CreateAccountActivity extends BaseLoginActivity {
     }
 
     private void sendPasswordResetEmail(final FirebaseUser user) {
-        String userEmail = user.getEmail();
+        final String userEmail = user.getEmail();
 
         if (userEmail != null) {
             auth.sendPasswordResetEmail(userEmail)
@@ -137,9 +137,8 @@ public class CreateAccountActivity extends BaseLoginActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Log.d(TAG, "Email sent.");
+                                Log.d(TAG, "Email sent to: " + userEmail);
                                 saveEmailToSharedPreferences(user);
-                                sendPasswordResetEmail(user);
                                 startEmailApp();
                                 finish();
                             } else {
