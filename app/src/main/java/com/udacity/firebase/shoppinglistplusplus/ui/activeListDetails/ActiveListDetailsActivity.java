@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -25,6 +26,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.Item;
@@ -38,7 +40,10 @@ import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.Re
 import com.udacity.firebase.shoppinglistplusplus.ui.activeListDetails.dialogs.RemoveListDialogFragment;
 import com.udacity.firebase.shoppinglistplusplus.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -61,6 +66,7 @@ public class ActiveListDetailsActivity extends BaseActivity implements
     public static final String TAG = ActiveListDetailsActivity.class.getSimpleName();
 
     private Button shoppingMode;
+    private TextView whoIsShopping;
     private Boolean userIsOwner;
     private Boolean isInShoppingMode = false;
     private String listId;
@@ -161,7 +167,10 @@ public class ActiveListDetailsActivity extends BaseActivity implements
         setSupportActionBarTitle();
 
         usersShoppingReference = db.collection(ACTIVE_LISTS).document(listId).collection(ACTIVE_SHOPPERS);
+        whoIsShopping = findViewById(R.id.tv_who_is_shopping);
         shoppingMode = findViewById(R.id.button_shopping);
+
+        setWhoIsShopping();
         setShoppingMode();
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view_items);
@@ -189,6 +198,62 @@ public class ActiveListDetailsActivity extends BaseActivity implements
                 getSupportActionBar().setTitle(shoppingList.getListName());
             }
         });
+    }
+
+    private void setWhoIsShopping() {
+        usersShoppingReference.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                List<String> shoppingUsers = new ArrayList<>();
+                for (DocumentSnapshot doc : snapshots) {
+                    if (doc.get(USERES_SHOPPING) != null) {
+                        String shoppingUserName = doc.getString(USERES_SHOPPING);
+                        shoppingUsers.add(shoppingUserName);
+                    }
+                }
+
+                whoIsShopping.setText(setWhoIsShoppingText(shoppingUsers));
+            }
+        });
+    }
+
+    private String setWhoIsShoppingText(List<String> shoppingUsers) {
+        boolean youAreShopping = false;
+
+        for (Iterator<String> iterator = shoppingUsers.iterator(); iterator.hasNext(); ) {
+            String value = iterator.next();
+            if (value.equals(userDisplayName)) {
+                iterator.remove();
+                youAreShopping = true;
+            }
+        }
+
+        if (youAreShopping) {
+            switch (shoppingUsers.size()) {
+                case 0:
+                    return "You are shopping";
+                case 1:
+                    return "You and " + shoppingUsers.get(0) + " are shopping";
+                default:
+                    return "You and " + (shoppingUsers.size()) + " others are shopping";
+            }
+        } else {
+            switch (shoppingUsers.size()) {
+                case 0:
+                    return "";
+                case 1:
+                    return shoppingUsers.get(0) + " is shopping";
+                case 2:
+                    return shoppingUsers.get(0) + " and " + shoppingUsers.get(1) + " are shopping";
+                default:
+                    return shoppingUsers.get(0) + " and " + (shoppingUsers.size() - 1) + " others are shopping";
+            }
+        }
     }
 
     private void setShoppingMode() {
