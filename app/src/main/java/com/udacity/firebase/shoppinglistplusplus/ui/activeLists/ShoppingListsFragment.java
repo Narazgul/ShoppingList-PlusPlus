@@ -120,7 +120,7 @@ public class ShoppingListsFragment extends Fragment implements ShoppingListAdapt
                 .setLifecycleOwner(getActivity())
                 .build();
 
-        return new ShoppingListAdapter(options, this);
+        return new ShoppingListAdapter(options, this, activity.userDisplayName);
     }
 
     @Override

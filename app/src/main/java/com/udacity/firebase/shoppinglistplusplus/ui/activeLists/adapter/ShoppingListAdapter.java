@@ -11,7 +11,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
-import com.udacity.firebase.shoppinglistplusplus.utils.Utils;
 
 public class ShoppingListAdapter extends FirestoreRecyclerAdapter<ShoppingList, ShoppingListAdapter.ShoppingListViewHolder> {
 
@@ -20,11 +19,14 @@ public class ShoppingListAdapter extends FirestoreRecyclerAdapter<ShoppingList, 
     }
 
     private ShoppingListItemClickListener listener;
+    private String userDisplayName;
 
-
-    public ShoppingListAdapter(@NonNull FirestoreRecyclerOptions<ShoppingList> options, ShoppingListItemClickListener listener) {
+    public ShoppingListAdapter(@NonNull FirestoreRecyclerOptions<ShoppingList> options,
+                               ShoppingListItemClickListener listener,
+                               String userDisplayName) {
         super(options);
         this.listener = listener;
+        this.userDisplayName = userDisplayName;
     }
 
 
@@ -59,21 +61,38 @@ public class ShoppingListAdapter extends FirestoreRecyclerAdapter<ShoppingList, 
 
         private TextView listName;
         private TextView createdBy;
-        private TextView editTime;
+        private TextView amountActualShoppers;
 
         ShoppingListViewHolder(@NonNull View itemView) {
             super(itemView);
 
             listName = itemView.findViewById(R.id.text_view_list_name);
             createdBy = itemView.findViewById(R.id.text_view_created_by_user);
-            editTime = itemView.findViewById(R.id.text_view_edit_time);
+            amountActualShoppers = itemView.findViewById(R.id.text_view_count_shopping_users);
         }
 
         void bind(ShoppingList list) {
             listName.setText(list.getListName());
-            createdBy.setText(list.getOwner());
-            String formattedDate = Utils.SIMPLE_DATE_FORMAT.format(list.getLastEdited().toDate());
-            editTime.setText(formattedDate);
+            createdBy.setText(setYouOrOwnerText(list.getOwner()));
+            amountActualShoppers.setText(setAmountOfPeopleShoppingOnListText(list.getUsersShoppingOnList()));
+        }
+
+        private String setYouOrOwnerText(String owner) {
+            if (owner.equals(userDisplayName)) {
+                return "You";
+            } else {
+                return owner;
+            }
+        }
+
+        private String setAmountOfPeopleShoppingOnListText(int amount) {
+            if (amount <= 0) {
+                return "";
+            } else if (amount == 1) {
+                return "1 person shopping";
+            } else {
+                return amount + " people shopping";
+            }
         }
     }
 }

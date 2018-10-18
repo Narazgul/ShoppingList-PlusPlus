@@ -9,8 +9,8 @@
     android:focusable="false"
     android:foreground="?selectableItemBackground"
     android:gravity="center_vertical"
-    android:paddingLeft="@dimen/margin_small"
-    android:paddingStart="@dimen/margin_small">
+    android:paddingStart="@dimen/margin_small"
+    android:paddingEnd="@dimen/margin_small">
 
     <TextView
         android:id="@+id/text_view_list_name"
@@ -42,7 +42,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/text_view_edit_time"
+        android:id="@+id/text_view_count_shopping_users"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"

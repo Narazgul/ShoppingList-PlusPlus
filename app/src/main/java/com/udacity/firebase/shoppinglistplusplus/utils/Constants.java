@@ -14,6 +14,7 @@ public final class Constants {
      */
     public static final String SHOPPING_LIST_NAME = "listName";
     public static final String SHOPPING_LIST_OWNER = "owner";
+    public static final String SHOPPING_USERS_ON_LIST = "usersShoppingOnList";
     public static final String SHOPPING_LIST_CREATED_AT = "createdAt";
     public static final String SHOPPING_LIST_LAST_EDITED = "lastEdited";
 

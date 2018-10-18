@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.firestore.WriteBatch;
 import com.udacity.firebase.shoppinglistplusplus.R;
 import com.udacity.firebase.shoppinglistplusplus.model.Item;
 import com.udacity.firebase.shoppinglistplusplus.model.ShoppingList;
@@ -56,6 +57,7 @@ import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ITEM_BOU
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ITEM_BOUGHT_BY;
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.ITEM_NAME;
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.PREFS_DISPLAY_NAME;
+import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.SHOPPING_USERS_ON_LIST;
 import static com.udacity.firebase.shoppinglistplusplus.utils.Constants.USERES_SHOPPING;
 
 public class ActiveListDetailsActivity extends BaseActivity implements
@@ -279,15 +281,23 @@ public class ActiveListDetailsActivity extends BaseActivity implements
     }
 
     public void toggleShoppingMode(View view) {
+        WriteBatch batch = db.batch();
         DocumentReference shoppingUserRef = usersShoppingReference.document(userUid);
+        DocumentReference listRef = db.collection(ACTIVE_LISTS).document(listId);
 
         if (isInShoppingMode) {
-            shoppingUserRef.delete();
+            batch.delete(shoppingUserRef);
+            batch.update(listRef, SHOPPING_USERS_ON_LIST, shoppingList.getUsersShoppingOnList() - 1);
+
+            batch.commit();
         } else {
             Map<String, Object> update = new HashMap<>();
             update.put(USERES_SHOPPING, userDisplayName);
 
-            shoppingUserRef.set(update);
+            batch.set(shoppingUserRef, update);
+            batch.update(listRef, SHOPPING_USERS_ON_LIST, shoppingList.getUsersShoppingOnList() + 1);
+
+            batch.commit();
         }
     }
 
